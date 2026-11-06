@@ -43,7 +43,7 @@ export default function LocationGuard({ children }: { children?: React.ReactNode
       }
 
       try {
-        const loc = await detectRealTimeLocation();
+        const loc = await detectRealTimeLocation(isManualClick);
         setHasLocation(loc.hasRealLocation);
         setIsDetecting(false);
         if (!loc.hasRealLocation && isManualClick) {

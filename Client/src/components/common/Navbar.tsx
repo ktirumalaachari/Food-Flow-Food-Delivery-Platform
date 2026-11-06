@@ -248,7 +248,9 @@ export default function Navbar({
                     ? locationInfo.zoneName
                     : locationInfo.hasRealLocation
                     ? (locationInfo.upazila || locationInfo.district || locationInfo.city)
-                    : "Location Off")
+                    : locationInfo.isDetecting
+                    ? "Locating..."
+                    : "Select Location")
                 : "Location"}
             </span>
           </button>
@@ -374,8 +376,10 @@ export default function Navbar({
                       ? locationInfo.zoneName
                       : locationInfo.hasRealLocation
                       ? (locationInfo.city || locationInfo.district || locationInfo.upazila)
-                      : "Prem Nagar & Berhampur, Odisha")
-                  : "Berhampur, Odisha"}
+                      : locationInfo.isDetecting
+                      ? "Locating..."
+                      : "Select Location")
+                  : "Location"}
               </span>
             </div>
             <span className="text-[10px] uppercase font-bold tracking-wider text-orange-600 bg-white px-2 py-0.5 rounded-full shrink-0">

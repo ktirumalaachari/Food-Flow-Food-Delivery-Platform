@@ -153,15 +153,15 @@ export default function LocationModal({ isOpen, onClose }: LocationModalProps) {
   const reverseGeocode = useCallback(
     async (lat: number, lng: number) => {
       try {
-        const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
-        const res = await fetch(url, { headers: { "Accept-Language": "en" } });
-        const data = await res.json();
-
-        if (data && data.display_name) {
-          const formatted = data.display_name;
-          setAddressText(formatted);
-          setSearchQuery(formatted);
-          return;
+        const res = await fetch(`/api/location/reverse?lat=${lat}&lng=${lng}`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json?.success && json?.data?.formattedAddress) {
+            const formatted = json.data.formattedAddress;
+            setAddressText(formatted);
+            setSearchQuery(formatted);
+            return;
+          }
         }
       } catch {}
 
@@ -184,36 +184,47 @@ export default function LocationModal({ isOpen, onClose }: LocationModalProps) {
   const handleLocateMe = async () => {
     setIsLocating(true);
     setSelectedZone(null);
-    if (!navigator.geolocation) {
-      setIsLocating(false);
-      return;
-    }
 
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        const exactLat = pos.coords.latitude;
-        const exactLng = pos.coords.longitude;
-        setLatitude(exactLat);
-        setLongitude(exactLng);
-        await reverseGeocode(exactLat, exactLng);
-        setIsLocating(false);
-      },
-      async () => {
-        try {
-          const ipRes = await fetch("https://ipapi.co/json/");
-          if (ipRes.ok) {
-            const data = await ipRes.json();
-            if (data && data.latitude && data.longitude) {
-              setLatitude(data.latitude);
-              setLongitude(data.longitude);
-              await reverseGeocode(data.latitude, data.longitude);
-            }
+    const getPosition = (highAccuracy: boolean): Promise<GeolocationPosition> => {
+      return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) return reject(new Error("Geolocation not supported"));
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: highAccuracy,
+          timeout: highAccuracy ? 5000 : 7000,
+          maximumAge: 0,
+        });
+      });
+    };
+
+    try {
+      let pos: GeolocationPosition;
+      try {
+        pos = await getPosition(true);
+      } catch {
+        pos = await getPosition(false);
+      }
+      const exactLat = pos.coords.latitude;
+      const exactLng = pos.coords.longitude;
+      setLatitude(exactLat);
+      setLongitude(exactLng);
+      await reverseGeocode(exactLat, exactLng);
+    } catch {
+      try {
+        const ipRes = await fetch("/api/location/ip");
+        if (ipRes.ok) {
+          const data = await ipRes.json();
+          if (data?.success && data.data?.latitude && data.data?.longitude) {
+            const exactLat = Number(data.data.latitude);
+            const exactLng = Number(data.data.longitude);
+            setLatitude(exactLat);
+            setLongitude(exactLng);
+            await reverseGeocode(exactLat, exactLng);
           }
-        } catch {}
-        setIsLocating(false);
-      },
-      { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
-    );
+        }
+      } catch {}
+    } finally {
+      setIsLocating(false);
+    }
   };
 
   // Address search autocompletion
@@ -227,19 +238,20 @@ export default function LocationModal({ isOpen, onClose }: LocationModalProps) {
       setIsSearching(true);
       try {
         const query = encodeURIComponent(searchQuery.trim());
-        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=5`;
-        const res = await fetch(url, { headers: { "Accept-Language": "en" } });
-        const data = await res.json();
-        if (Array.isArray(data)) {
-          setSearchResults(data);
-          setShowSuggestions(true);
+        const res = await fetch(`/api/location/search?q=${query}`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json?.success && Array.isArray(json.data)) {
+            setSearchResults(json.data);
+            setShowSuggestions(true);
+          }
         }
       } catch {
         setSearchResults([]);
       } finally {
         setIsSearching(false);
       }
-    }, 400);
+    }, 350);
 
     return () => clearTimeout(timer);
   }, [searchQuery, addressText]);
