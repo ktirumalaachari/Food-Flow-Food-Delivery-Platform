@@ -18,7 +18,10 @@ const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
 export const auth = betterAuth({
   database: mongodbAdapter(db),
   secret: process.env.BETTER_AUTH_SECRET,
-  baseURL: process.env.BETTER_AUTH_URL,
+  baseURL:
+    process.env.BETTER_AUTH_URL ||
+    process.env.NEXT_PUBLIC_BETTER_AUTH_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000"),
   trustedOrigins: [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
