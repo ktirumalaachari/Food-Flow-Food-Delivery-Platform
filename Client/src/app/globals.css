@@ -1,0 +1,308 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fffdf8;
+  --foreground: #111827;
+}
+
+/* Design tokens — source of truth is project-scope.md §2 */
+@theme {
+  --color-brand: #ff6b35;
+  --color-brand-dark: #e85a26;
+  --color-accent: #ffb703;
+  --color-ink: #111827;
+  --color-cream: #fffdf8;
+  --color-success: #22c55e;
+  --color-danger: #ef4444;
+  --color-muted: #6b7280;
+
+  --radius-card: 20px;
+  --radius-btn: 12px;
+  --radius-widget: 18px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-jakarta), var(--font-inter), ui-sans-serif,
+    system-ui, sans-serif;
+
+  --animate-fade-in-up: fade-in-up 0.5s ease-out both;
+  --animate-fade-in-up-delay: fade-in-up 0.5s ease-out 0.1s both;
+  --animate-slide-down: slide-down 0.3s ease-out both;
+  --animate-scale-in: scale-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  --animate-shake: shake 0.4s ease-in-out;
+  --animate-pop: pop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-jakarta), var(--font-inter), ui-sans-serif, system-ui,
+    sans-serif;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 80px;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Custom Sleek Scrollbar */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #E2E8F0 transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #E2E8F0;
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #CBD5E1;
+}
+
+/* Mobile Touch & Scroll Optimizations */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: hidden;
+  touch-action: manipulation;
+  -webkit-font-smoothing: antialiased;
+}
+
+.touch-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ============================================================================== */
+/* SWIGGY-THEME MICRO-INTERACTIONS, SHADOWS & ANIMATIONS                           */
+/* ============================================================================== */
+
+@keyframes swiggy-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.85;
+  }
+}
+
+@keyframes swiggy-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes swiggy-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes swiggy-cart-bounce {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  30% {
+    transform: translateY(-6px) scale(1.02);
+  }
+  60% {
+    transform: translateY(2px) scale(0.99);
+  }
+}
+
+/* Swiggy Card Hover Lift & Soft Drop Shadow */
+.swiggy-card {
+  transition: transform 0.28s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.28s cubic-bezier(0.2, 0, 0, 1);
+  will-change: transform, box-shadow;
+}
+
+.swiggy-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px -4px rgba(40, 44, 63, 0.12), 0 4px 10px -2px rgba(40, 44, 63, 0.04);
+}
+
+/* Swiggy Image Scale Zoom */
+.swiggy-img-zoom {
+  transition: transform 0.45s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.group:hover .swiggy-img-zoom {
+  transform: scale(1.06);
+}
+
+/* Swiggy Tap Scale for Buttons */
+.swiggy-btn {
+  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+}
+
+.swiggy-btn:active {
+  transform: scale(0.96);
+}
+
+/* Swiggy ADD button styling */
+.swiggy-add-btn {
+  background: #ffffff;
+  color: #16a34a;
+  border: 1px solid #e5e7eb;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.swiggy-add-btn:hover {
+  background: #f0fdf4;
+  border-color: #86efac;
+  box-shadow: 0 6px 14px rgba(22, 163, 74, 0.15);
+  transform: translateY(-1px);
+}
+
+.swiggy-add-btn:active {
+  transform: scale(0.94);
+}
+
+/* Swiggy Circular Food Category Ring */
+.swiggy-cat-circle {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+
+.group:hover .swiggy-cat-circle {
+  transform: scale(1.08);
+  box-shadow: 0 8px 20px rgba(252, 128, 25, 0.25);
+}
+
+/* Swiggy Offer Coupon Notched Border */
+.swiggy-coupon-border {
+  border: 1.5px dashed #fc8019;
+  background: linear-gradient(to right, #fff7ed, #ffffff);
+}
+
+/* Shimmer Loading Skeleton */
+.swiggy-shimmer {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: swiggy-shimmer 1.6s infinite linear;
+}
+
+/* Swiggy Cart Bottom Bar Animation */
+.swiggy-cart-bar {
+  animation: swiggy-cart-bounce 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+
+
+/* ── Progressive Web App (PWA) App-Like Utilities ── */
+@media all and (display-mode: standalone) {
+  /* Standalone PWA top status bar and bottom gesture bar padding */
+  body {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+    overscroll-behavior-y: contain;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* Touch-optimized tap interactions */
+a, button, input, select, textarea {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Prevent accidental text highlight on interactive navigation */
+nav, .no-select {
+  -webkit-user-select: none;
+  user-select: none;
+}

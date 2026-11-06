@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Offline — Food Flow</title>
+  <link rel="icon" href="/foodNav.png">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    body {
+      background: #f9fafb;
+      color: #111827;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 1.5rem;
+      padding: 2.5rem 2rem;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+      border: 1px solid #f3f4f6;
+    }
+    .icon-container {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1.5rem;
+      border-radius: 50%;
+      background: #fff7ed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ff5200;
+      animation: pulse 2s infinite ease-in-out;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.85; }
+    }
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 0.75rem;
+    }
+    p {
+      font-size: 0.95rem;
+      color: #6b7280;
+      line-height: 1.5;
+      margin-bottom: 1.75rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: #fee2e2;
+      color: #dc2626;
+      margin-bottom: 1rem;
+    }
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #dc2626;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 0.875rem 1.25rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: #ff5200;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(255, 82, 0, 0.25);
+    }
+    .btn-primary:hover {
+      background: #e04800;
+      transform: translateY(-1px);
+    }
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+      margin-top: 0.75rem;
+    }
+    .btn-secondary:hover {
+      background: #e5e7eb;
+    }
+    .status-text {
+      margin-top: 1.5rem;
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+    .connected {
+      background: #dcfce7 !important;
+      color: #16a34a !important;
+    }
+    .connected .badge-dot {
+      background: #16a34a !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="badge" id="connStatus">
+      <span class="badge-dot"></span>
+      No Internet Connection
+    </div>
+    <div class="icon-container">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="1" y1="1" x2="23" y2="23"></line>
+        <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+        <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+        <path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+        <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+        <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+        <line x1="12" y1="20" x2="12.01" y2="20"></line>
+      </svg>
+    </div>
+    <h1>You're Currently Offline</h1>
+    <p>Please check your internet connection or Wi-Fi. Food Flow will automatically reconnect as soon as you're back online.</p>
+    
+    <button class="btn btn-primary" id="retryBtn" onclick="handleRetry()">
+      Try Reconnecting
+    </button>
+    <a href="/" class="btn btn-secondary">
+      Return to Home
+    </a>
+
+    <div class="status-text" id="statusMsg">
+      Listening for network signal...
+    </div>
+  </div>
+
+  <script>
+    function updateConnectionStatus() {
+      const statusEl = document.getElementById('connStatus');
+      const statusMsg = document.getElementById('statusMsg');
+      if (navigator.onLine) {
+        statusEl.className = 'badge connected';
+        statusEl.innerHTML = '<span class="badge-dot"></span> Online — Reconnecting...';
+        statusMsg.innerText = 'Connected! Refreshing page...';
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } else {
+        statusEl.className = 'badge';
+        statusEl.innerHTML = '<span class="badge-dot"></span> No Internet Connection';
+        statusMsg.innerText = 'Waiting for network connectivity...';
+      }
+    }
+
+    function handleRetry() {
+      const btn = document.getElementById('retryBtn');
+      btn.innerText = 'Checking...';
+      btn.disabled = true;
+      fetch('/api/stats', { method: 'HEAD', cache: 'no-store' })
+        .then(() => {
+          window.location.reload();
+        })
+        .catch(() => {
+          btn.innerText = 'Still Offline — Try Again';
+          btn.disabled = false;
+        });
+    }
+
+    window.addEventListener('online', updateConnectionStatus);
+    window.addEventListener('offline', updateConnectionStatus);
+  </script>
+</body>
+</html>
