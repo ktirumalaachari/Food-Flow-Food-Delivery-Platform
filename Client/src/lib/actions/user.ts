@@ -1,12 +1,5 @@
 import { ApiResponse, IUser } from "@/lib/api/user";
-
-const SERVER_BASE_URL = (
-  process.env.NEXT_PUBLIC_SERVER_API_URL ||
-  process.env.NEXT_PUBLIC_SERVER_URL ||
-  "http://localhost:5000"
-).replace(/\/api\/?$/, "").replace(/\/$/, "");
-
-const API_BASE_URL = `${SERVER_BASE_URL}/api`;
+import { getApiBaseUrl } from "@/lib/api/config";
 
 /**
  * Update a user's role (Customer | Restaurant | Rider | Admin)
@@ -20,7 +13,7 @@ export async function updateUserRole(
       return { success: false, message: "User ID and new role are required." };
     }
 
-    const res = await fetch(`${API_BASE_URL}/admin/users/${encodeURIComponent(userId)}/role`, {
+    const res = await fetch(`${getApiBaseUrl()}/admin/users/${encodeURIComponent(userId)}/role`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -51,7 +44,7 @@ export async function updateUserStatus(
       return { success: false, message: "User ID and new status are required." };
     }
 
-    const res = await fetch(`${API_BASE_URL}/admin/users/${encodeURIComponent(userId)}/status`, {
+    const res = await fetch(`${getApiBaseUrl()}/admin/users/${encodeURIComponent(userId)}/status`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -103,7 +96,7 @@ export async function updateUserDetails(
       // Fall through to express server if local fetch fails
     }
 
-    const res = await fetch(`${API_BASE_URL}/admin/users/${encodeURIComponent(userId)}`, {
+    const res = await fetch(`${getApiBaseUrl()}/admin/users/${encodeURIComponent(userId)}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -133,7 +126,7 @@ export async function deleteUser(
       return { success: false, message: "User ID is required." };
     }
 
-    const res = await fetch(`${API_BASE_URL}/admin/users/${encodeURIComponent(userId)}`, {
+    const res = await fetch(`${getApiBaseUrl()}/admin/users/${encodeURIComponent(userId)}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

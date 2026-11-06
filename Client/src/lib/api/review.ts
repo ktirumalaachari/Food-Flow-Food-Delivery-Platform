@@ -43,13 +43,7 @@ export interface IReviewSummary {
   foodReviews?: IReview[];
 }
 
-const SERVER_BASE_URL = (
-  process.env.NEXT_PUBLIC_SERVER_API_URL ||
-  process.env.NEXT_PUBLIC_SERVER_URL ||
-  "http://localhost:5000"
-).replace(/\/api\/?$/, "").replace(/\/$/, "");
-
-const API_BASE_URL = `${SERVER_BASE_URL}/api`;
+import { getApiBaseUrl } from "@/lib/api/config";
 
 /**
  * Submit post-delivery reviews (Rider, Restaurant, Food Items)
@@ -266,7 +260,7 @@ export async function getPublicTestimonialsApi(starFilter?: string | number): Pr
     }
 
     // Fallback: Fetch directly from Express server endpoint
-    const fallbackRes = await fetch(`${SERVER_BASE_URL}/api/reviews/testimonials?${query.toString()}`, {
+    const fallbackRes = await fetch(`${getApiBaseUrl()}/reviews/testimonials?${query.toString()}`, {
       method: "GET",
       headers: { ...getAuthHeaders() },
       cache: "no-store",

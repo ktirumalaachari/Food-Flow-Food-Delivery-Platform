@@ -1,14 +1,7 @@
 import { ApiResponse } from "@/lib/api/admin";
 import { IRestaurant } from "@/lib/api/restaurant";
 import { IRiderProfile } from "@/lib/api/rider";
-
-const SERVER_BASE_URL = (
-  process.env.NEXT_PUBLIC_SERVER_API_URL ||
-  process.env.NEXT_PUBLIC_SERVER_URL ||
-  "http://localhost:5000"
-).replace(/\/api\/?$/, "").replace(/\/$/, "");
-
-const API_BASE_URL = `${SERVER_BASE_URL}/api`;
+import { getApiBaseUrl } from "@/lib/api/config";
 
 /**
  * 1. Approve or Update Restaurant Status (active, suspended, pending, rejected)
@@ -18,7 +11,7 @@ export async function updateRestaurantStatusAdmin(
   newStatus: string
 ): Promise<ApiResponse<IRestaurant>> {
   try {
-    const res = await fetch(`${API_BASE_URL}/admin/restaurants/${encodeURIComponent(restaurantId)}/status`, {
+    const res = await fetch(`${getApiBaseUrl()}/admin/restaurants/${encodeURIComponent(restaurantId)}/status`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: newStatus }),
@@ -42,7 +35,7 @@ export async function deleteRestaurantAdmin(
   restaurantId: string
 ): Promise<ApiResponse<{ id: string }>> {
   try {
-    const res = await fetch(`${API_BASE_URL}/admin/restaurants/${encodeURIComponent(restaurantId)}`, {
+    const res = await fetch(`${getApiBaseUrl()}/admin/restaurants/${encodeURIComponent(restaurantId)}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
     });
@@ -65,7 +58,7 @@ export async function updateRiderStatusAdmin(
   newStatus: string
 ): Promise<ApiResponse<IRiderProfile>> {
   try {
-    const res = await fetch(`${API_BASE_URL}/admin/riders/${encodeURIComponent(riderId)}/status`, {
+    const res = await fetch(`${getApiBaseUrl()}/admin/riders/${encodeURIComponent(riderId)}/status`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: newStatus }),
@@ -89,7 +82,7 @@ export async function deleteRiderAdmin(
   riderId: string
 ): Promise<ApiResponse<{ id: string }>> {
   try {
-    const res = await fetch(`${API_BASE_URL}/admin/riders/${encodeURIComponent(riderId)}`, {
+    const res = await fetch(`${getApiBaseUrl()}/admin/riders/${encodeURIComponent(riderId)}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
     });

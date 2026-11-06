@@ -1,13 +1,5 @@
 import { TCreateOrderPayload, TOrderApiResponse } from "@/types/order";
-
-const SERVER_BASE_URL = (
-  process.env.NEXT_PUBLIC_SERVER_API_URL ||
-  process.env.NEXT_PUBLIC_SERVER_URL ||
-  "http://localhost:5000"
-).replace(/\/api\/?$/, "").replace(/\/$/, "");
-
-const API_BASE_URL = `${SERVER_BASE_URL}/api`;
-
+import { getApiBaseUrl, getServerBaseUrl } from "@/lib/api/config";
 import { getAuthHeaders } from "@/lib/jwt";
 
 function buildIdentityHeaders(userId?: string, userEmail?: string): Record<string, string> {

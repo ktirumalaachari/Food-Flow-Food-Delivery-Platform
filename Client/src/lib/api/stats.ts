@@ -1,4 +1,5 @@
 import { getAuthHeaders } from "@/lib/jwt";
+import { getApiBaseUrl } from "@/lib/api/config";
 
 export interface IPublicStatsData {
   partnerRestaurants: number;
@@ -8,12 +9,6 @@ export interface IPublicStatsData {
   avgRating: number;
   totalReviews: number;
 }
-
-const SERVER_BASE_URL = (
-  process.env.NEXT_PUBLIC_SERVER_API_URL ||
-  process.env.NEXT_PUBLIC_SERVER_URL ||
-  "http://localhost:5000"
-).replace(/\/api\/?$/, "").replace(/\/$/, "");
 
 /**
  * Fetch live dynamic platform statistics for homepage counters and badges
@@ -35,7 +30,7 @@ export async function getPublicStatsApi(): Promise<{
     }
 
     // Fallback: fetch directly from Express server endpoint
-    const fallbackRes = await fetch(`${SERVER_BASE_URL}/api/stats/public`, {
+    const fallbackRes = await fetch(`${getApiBaseUrl()}/stats/public`, {
       method: "GET",
       headers: { ...getAuthHeaders() },
       cache: "no-store",
@@ -63,7 +58,7 @@ export async function getRestaurantsCountApi(): Promise<number> {
       if (json?.data?.count && json.data.count > 0) return json.data.count;
     }
 
-    const fallbackRes = await fetch(`${SERVER_BASE_URL}/api/stats/restaurants-count`, { cache: "no-store" });
+    const fallbackRes = await fetch(`${getApiBaseUrl()}/stats/restaurants-count`, { cache: "no-store" });
     if (fallbackRes.ok) {
       const fallbackJson = await fallbackRes.json();
       if (fallbackJson?.data?.count) return fallbackJson.data.count;
@@ -83,7 +78,7 @@ export async function getOrdersDeliveredCountApi(): Promise<number> {
       if (json?.data?.count && json.data.count > 0) return json.data.count;
     }
 
-    const fallbackRes = await fetch(`${SERVER_BASE_URL}/api/stats/orders-delivered-count`, { cache: "no-store" });
+    const fallbackRes = await fetch(`${getApiBaseUrl()}/stats/orders-delivered-count`, { cache: "no-store" });
     if (fallbackRes.ok) {
       const fallbackJson = await fallbackRes.json();
       if (fallbackJson?.data?.count) return fallbackJson.data.count;
@@ -103,7 +98,7 @@ export async function getRidersCountApi(): Promise<number> {
       if (json?.data?.count && json.data.count > 0) return json.data.count;
     }
 
-    const fallbackRes = await fetch(`${SERVER_BASE_URL}/api/stats/riders-count`, { cache: "no-store" });
+    const fallbackRes = await fetch(`${getApiBaseUrl()}/stats/riders-count`, { cache: "no-store" });
     if (fallbackRes.ok) {
       const fallbackJson = await fallbackRes.json();
       if (fallbackJson?.data?.count) return fallbackJson.data.count;
@@ -123,7 +118,7 @@ export async function getHappyCustomersCountApi(): Promise<number> {
       if (json?.data?.count && json.data.count > 0) return json.data.count;
     }
 
-    const fallbackRes = await fetch(`${SERVER_BASE_URL}/api/stats/happy-customers-count`, { cache: "no-store" });
+    const fallbackRes = await fetch(`${getApiBaseUrl()}/stats/happy-customers-count`, { cache: "no-store" });
     if (fallbackRes.ok) {
       const fallbackJson = await fallbackRes.json();
       if (fallbackJson?.data?.count) return fallbackJson.data.count;

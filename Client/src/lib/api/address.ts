@@ -1,13 +1,5 @@
 import { TAddress, TAddressApiResponse } from "@/types/address";
-
-const SERVER_BASE_URL = (
-  process.env.NEXT_PUBLIC_SERVER_API_URL ||
-  process.env.NEXT_PUBLIC_SERVER_URL ||
-  "http://localhost:5000"
-).replace(/\/api\/?$/, "").replace(/\/$/, "");
-
-const API_BASE_URL = `${SERVER_BASE_URL}/api`;
-
+import { getApiBaseUrl } from "@/lib/api/config";
 import { getAuthHeaders } from "@/lib/jwt";
 
 function buildIdentityHeaders(userId?: string, userEmail?: string): Record<string, string> {
@@ -26,7 +18,7 @@ export async function getAddresses(
       return { success: false, message: "User ID is required." };
     }
 
-    const res = await fetch(`${API_BASE_URL}/addresses`, {
+    const res = await fetch(`${getApiBaseUrl()}/addresses`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -54,7 +46,7 @@ export async function createAddress(
   payload: Partial<TAddress>
 ): Promise<TAddressApiResponse> {
   try {
-    const res = await fetch(`${API_BASE_URL}/addresses`, {
+    const res = await fetch(`${getApiBaseUrl()}/addresses`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -83,7 +75,7 @@ export async function updateAddress(
   payload: Partial<TAddress>
 ): Promise<TAddressApiResponse> {
   try {
-    const res = await fetch(`${API_BASE_URL}/addresses/${id}`, {
+    const res = await fetch(`${getApiBaseUrl()}/addresses/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -111,7 +103,7 @@ export async function deleteAddress(
   id: string
 ): Promise<TAddressApiResponse> {
   try {
-    const res = await fetch(`${API_BASE_URL}/addresses/${id}`, {
+    const res = await fetch(`${getApiBaseUrl()}/addresses/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -138,7 +130,7 @@ export async function setDefaultAddress(
   id: string
 ): Promise<TAddressApiResponse> {
   try {
-    const res = await fetch(`${API_BASE_URL}/addresses/${id}/default`, {
+    const res = await fetch(`${getApiBaseUrl()}/addresses/${id}/default`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

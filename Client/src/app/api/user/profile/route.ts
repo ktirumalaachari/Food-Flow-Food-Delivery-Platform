@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { ObjectId } from "mongodb";
+import { getServerBaseUrl } from "@/lib/api/config";
 
 export async function GET(req: NextRequest) {
   try {
@@ -117,7 +118,7 @@ export async function PATCH(req: NextRequest) {
     ]);
 
     // Also attempt proxy to Express server if running
-    const serverUrl = process.env.NEXT_PUBLIC_SERVER_API_URL || "http://localhost:5000";
+    const serverUrl = getServerBaseUrl();
     fetch(`${serverUrl.replace(/\/$/, "")}/api/admin/users/${encodeURIComponent(targetId)}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },

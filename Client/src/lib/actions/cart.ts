@@ -1,12 +1,5 @@
 import { TCartApiResponse, TCartItem } from "@/types/cart";
-
-const SERVER_BASE_URL = (
-  process.env.NEXT_PUBLIC_SERVER_API_URL ||
-  process.env.NEXT_PUBLIC_SERVER_URL ||
-  "http://localhost:5000"
-).replace(/\/api\/?$/, "").replace(/\/$/, "");
-
-const API_BASE_URL = `${SERVER_BASE_URL}/api`;
+import { getApiBaseUrl } from "@/lib/api/config";
 
 interface IdentityHeaders {
   "x-user-id": string;
@@ -33,7 +26,7 @@ export async function addToCartAction(
   payload: Partial<TCartItem>
 ): Promise<TCartApiResponse> {
   try {
-    const res = await fetch(`${API_BASE_URL}/cart/${userId}`, {
+    const res = await fetch(`${getApiBaseUrl()}/cart/${userId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -65,7 +58,7 @@ export async function updateCartQuantityAction(
   delta: number
 ): Promise<TCartApiResponse> {
   try {
-    const res = await fetch(`${API_BASE_URL}/cart/${userId}/${foodId}`, {
+    const res = await fetch(`${getApiBaseUrl()}/cart/${userId}/${foodId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -93,7 +86,7 @@ export async function removeCartItemAction(
   foodId: string
 ): Promise<TCartApiResponse> {
   try {
-    const res = await fetch(`${API_BASE_URL}/cart/${userId}/${foodId}`, {
+    const res = await fetch(`${getApiBaseUrl()}/cart/${userId}/${foodId}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -119,7 +112,7 @@ export async function clearCartAction(
   userEmail: string
 ): Promise<TCartApiResponse> {
   try {
-    const res = await fetch(`${API_BASE_URL}/cart/${userId}`, {
+    const res = await fetch(`${getApiBaseUrl()}/cart/${userId}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

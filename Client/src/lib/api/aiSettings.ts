@@ -39,19 +39,13 @@ export interface IAiSettingsData {
   updatedAt?: string;
 }
 
-const SERVER_BASE_URL = (
-  process.env.NEXT_PUBLIC_SERVER_API_URL ||
-  process.env.NEXT_PUBLIC_SERVER_URL ||
-  "http://localhost:5000"
-).replace(/\/api\/?$/, "").replace(/\/$/, "");
-
-const API_BASE_URL = `${SERVER_BASE_URL}/api`;
+import { getApiBaseUrl } from "@/lib/api/config";
 
 export async function getAiSettings(): Promise<{ success: boolean; data?: IAiSettingsData; message?: string }> {
   try {
     let res = await fetch("/api/ai/settings", { cache: "no-store" });
     if (!res.ok) {
-      res = await fetch(`${API_BASE_URL}/ai/settings`, { cache: "no-store" });
+      res = await fetch(`${getApiBaseUrl()}/ai/settings`, { cache: "no-store" });
     }
     const json = await res.json();
     return json;
@@ -74,7 +68,7 @@ export async function updateAiSettings(
     });
 
     if (!res.ok) {
-      res = await fetch(`${API_BASE_URL}/ai/settings`, {
+      res = await fetch(`${getApiBaseUrl()}/ai/settings`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -103,7 +97,7 @@ export async function addAiKey(
     });
 
     if (!res.ok) {
-      res = await fetch(`${API_BASE_URL}/ai/settings`, {
+      res = await fetch(`${getApiBaseUrl()}/ai/settings`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "add_key", provider, apiKey }),
@@ -131,7 +125,7 @@ export async function removeAiKey(
     });
 
     if (!res.ok) {
-      res = await fetch(`${API_BASE_URL}/ai/settings`, {
+      res = await fetch(`${getApiBaseUrl()}/ai/settings`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "remove_key", provider, index }),
@@ -161,7 +155,7 @@ export async function testAiKey(
     });
 
     if (!res.ok) {
-      res = await fetch(`${API_BASE_URL}/ai/test-key`, {
+      res = await fetch(`${getApiBaseUrl()}/ai/test-key`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ provider, apiKey, model, keyIndex }),
@@ -190,7 +184,7 @@ export async function resetKeyUsage(
     });
 
     if (!res.ok) {
-      res = await fetch(`${API_BASE_URL}/ai/settings`, {
+      res = await fetch(`${getApiBaseUrl()}/ai/settings`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "reset_usage", provider, index }),

@@ -7,7 +7,10 @@ let io: SocketIOServer | null = null;
 export function initSocket(httpServer: HTTPServer): SocketIOServer {
   io = new SocketIOServer(httpServer, {
     cors: {
-      origin: '*',
+      origin: (requestOrigin, callback) => {
+        // Reflect origin dynamically to satisfy credentials: true requirements across Vercel & local
+        callback(null, requestOrigin || true);
+      },
       methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
       credentials: true,
     },

@@ -48,17 +48,7 @@ export interface ApiResponse<T> {
   meta?: any;
 }
 
-const SERVER_BASE_URL = (
-  process.env.NEXT_PUBLIC_SERVER_API_URL ||
-  process.env.NEXT_PUBLIC_SERVER_URL ||
-  "http://localhost:5000"
-).replace(/\/api\/?$/, "").replace(/\/$/, "");
-
-const API_BASE_URL = `${SERVER_BASE_URL}/api`;
-
-/**
- * Get the current rider's profile by email or user ID
- */
+import { getApiBaseUrl } from "@/lib/api/config";
 import { getAuthHeaders } from "@/lib/jwt";
 
 export async function getMyRiderProfile(
@@ -71,7 +61,7 @@ export async function getMyRiderProfile(
       return { success: false, message: "No rider email or ID provided." };
     }
 
-    const url = new URL(`${API_BASE_URL}/rider/my-profile`);
+    const url = new URL(`${getApiBaseUrl()}/rider/my-profile`);
     if (email) url.searchParams.append("email", email);
     if (userId) url.searchParams.append("userId", userId);
 
@@ -105,7 +95,7 @@ export async function getMyRiderProfile(
  */
 export async function getAllRiders(): Promise<ApiResponse<IRiderProfile[]>> {
   try {
-    const res = await fetch(`${API_BASE_URL}/rider/all`, {
+    const res = await fetch(`${getApiBaseUrl()}/rider/all`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

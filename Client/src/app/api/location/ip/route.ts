@@ -1,11 +1,50 @@
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
+function isPrivateIp(ip: string): boolean {
+  if (!ip) return true;
+  const clean = ip.trim().replace(/^::ffff:/, "");
+  return (
+    clean === "127.0.0.1" ||
+    clean === "::1" ||
+    clean === "localhost" ||
+    clean.startsWith("10.") ||
+    clean.startsWith("192.168.") ||
+    clean.startsWith("172.16.") ||
+    clean.startsWith("172.17.") ||
+    clean.startsWith("172.18.") ||
+    clean.startsWith("172.19.") ||
+    clean.startsWith("172.20.") ||
+    clean.startsWith("172.21.") ||
+    clean.startsWith("172.22.") ||
+    clean.startsWith("172.23.") ||
+    clean.startsWith("172.24.") ||
+    clean.startsWith("172.25.") ||
+    clean.startsWith("172.26.") ||
+    clean.startsWith("172.27.") ||
+    clean.startsWith("172.28.") ||
+    clean.startsWith("172.29.") ||
+    clean.startsWith("172.30.") ||
+    clean.startsWith("172.31.")
+  );
+}
+
 export async function GET(req: NextRequest) {
   try {
-    // 1. Try ipwho.is
+    // Extract real client IP from incoming request headers
+    const forwarded = req.headers.get("x-forwarded-for");
+    const realIp = req.headers.get("x-real-ip");
+    const cfConnectingIp = req.headers.get("cf-connecting-ip");
+    const clientIp = (cfConnectingIp || (forwarded ? forwarded.split(",")[0].trim() : realIp) || "").trim();
+
+    const queryIp = clientIp && !isPrivateIp(clientIp) ? clientIp : "";
+
+    // 1. Try ipwho.is with client IP
     try {
-      const res = await fetch("https://ipwho.is/", {
-        next: { revalidate: 3600 },
+      const url = queryIp ? `https://ipwho.is/${queryIp}` : "https://ipwho.is/";
+      const res = await fetch(url, {
+        cache: "no-store",
         signal: AbortSignal.timeout(4000),
       });
 
@@ -21,16 +60,18 @@ export async function GET(req: NextRequest) {
               region: data.region || "",
               country: data.country || "",
               postal: data.postal || "",
+              ip: data.ip || clientIp,
             },
           });
         }
       }
     } catch {}
 
-    // 2. Fallback to freeipapi
+    // 2. Fallback to freeipapi with client IP
     try {
-      const res2 = await fetch("https://freeipapi.com/api/json", {
-        next: { revalidate: 3600 },
+      const url2 = queryIp ? `https://freeipapi.com/api/json/${queryIp}` : "https://freeipapi.com/api/json";
+      const res2 = await fetch(url2, {
+        cache: "no-store",
         signal: AbortSignal.timeout(4000),
       });
       if (res2.ok) {
@@ -45,13 +86,14 @@ export async function GET(req: NextRequest) {
               region: data2.regionName || "",
               country: data2.countryName || "",
               postal: data2.zipCode || "",
+              ip: data2.ipAddress || clientIp,
             },
           });
         }
       }
     } catch {}
 
-    // 3. Fallback default Berhampur
+    // 3. Fallback default Berhampur coordinates
     return NextResponse.json({
       success: true,
       data: {
@@ -69,3 +111,4 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+

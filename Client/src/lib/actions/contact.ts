@@ -7,15 +7,7 @@ import {
   TContactStatus,
 } from "@/lib/api/contact";
 
-const SERVER_BASE_URL = (
-  process.env.NEXT_PUBLIC_SERVER_API_URL ||
-  process.env.NEXT_PUBLIC_SERVER_URL ||
-  "http://localhost:5000"
-)
-  .replace(/\/api\/?$/, "")
-  .replace(/\/$/, "");
-
-const API_BASE_URL = `${SERVER_BASE_URL}/api`;
+import { getApiBaseUrl } from "@/lib/api/config";
 
 const SUPPORT_EMAIL = process.env.EMAIL_FROM || process.env.SMTP_USER || "foodflow.support@gmail.com";
 
@@ -64,7 +56,7 @@ export async function submitContactForm(
     // 1. Save into Backend Database
     let savedDoc: IContactMessage | undefined;
     try {
-      const dbRes = await fetch(`${API_BASE_URL}/contacts`, {
+      const dbRes = await fetch(`${getApiBaseUrl()}/contacts`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -455,7 +447,7 @@ export async function replyToContactMessageAction(payload: {
 
     // 2. Record Reply in Server Database
     const res = await fetch(
-      `${API_BASE_URL}/contacts/${encodeURIComponent(messageId)}/reply`,
+      `${getApiBaseUrl()}/contacts/${encodeURIComponent(messageId)}/reply`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -494,7 +486,7 @@ export async function updateContactStatusAction(
 ): Promise<ApiResponse<IContactMessage>> {
   try {
     const res = await fetch(
-      `${API_BASE_URL}/contacts/${encodeURIComponent(messageId)}/status`,
+      `${getApiBaseUrl()}/contacts/${encodeURIComponent(messageId)}/status`,
       {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -528,7 +520,7 @@ export async function deleteContactMessageAction(
 ): Promise<ApiResponse<{ id: string }>> {
   try {
     const res = await fetch(
-      `${API_BASE_URL}/contacts/${encodeURIComponent(messageId)}`,
+      `${getApiBaseUrl()}/contacts/${encodeURIComponent(messageId)}`,
       {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },

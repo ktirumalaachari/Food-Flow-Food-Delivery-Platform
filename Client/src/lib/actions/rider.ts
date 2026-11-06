@@ -1,12 +1,5 @@
 import { ApiResponse, IRiderProfile } from "@/lib/api/rider";
-
-const SERVER_BASE_URL = (
-  process.env.NEXT_PUBLIC_SERVER_API_URL ||
-  process.env.NEXT_PUBLIC_SERVER_URL ||
-  "http://localhost:5000"
-).replace(/\/api\/?$/, "").replace(/\/$/, "");
-
-const API_BASE_URL = `${SERVER_BASE_URL}/api`;
+import { getApiBaseUrl } from "@/lib/api/config";
 
 /**
  * 1. POST - Create new Rider Profile
@@ -15,7 +8,7 @@ export async function createRiderProfile(
   payload: Partial<IRiderProfile>
 ): Promise<ApiResponse<IRiderProfile>> {
   try {
-    const res = await fetch(`${API_BASE_URL}/rider/profile`, {
+    const res = await fetch(`${getApiBaseUrl()}/rider/profile`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -42,7 +35,7 @@ export async function updateRiderProfile(
   payload: Partial<IRiderProfile>
 ): Promise<ApiResponse<IRiderProfile>> {
   try {
-    const url = new URL(`${API_BASE_URL}/rider/profile`);
+    const url = new URL(`${getApiBaseUrl()}/rider/profile`);
     url.searchParams.append("email", email);
 
     const res = await fetch(url.toString(), {
@@ -72,7 +65,7 @@ export async function toggleRiderAvailability(
   isAvailable: boolean
 ): Promise<ApiResponse<IRiderProfile>> {
   try {
-    const res = await fetch(`${API_BASE_URL}/rider/profile/availability`, {
+    const res = await fetch(`${getApiBaseUrl()}/rider/profile/availability`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -98,7 +91,7 @@ export async function deleteRiderProfile(
   email: string
 ): Promise<ApiResponse<{ deletedCount: number }>> {
   try {
-    const res = await fetch(`${API_BASE_URL}/rider/profile`, {
+    const res = await fetch(`${getApiBaseUrl()}/rider/profile`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

@@ -379,27 +379,29 @@ export async function fetchIpBasedLocationFallback(): Promise<ILocationInfo | nu
   let ipCity = "";
   let ipRegion = "";
 
+  // 1. First attempt direct browser lookup (fastest & directly from client's public ISP IP)
   try {
-    const res = await fetch("/api/location/ip", { signal: AbortSignal.timeout(3500) });
+    const res = await fetch("https://ipwho.is/", { signal: AbortSignal.timeout(3500) });
     if (res.ok) {
-      const json = await res.json();
-      if (json?.success && json?.data) {
-        lat = Number(json.data.latitude) || lat;
-        lon = Number(json.data.longitude) || lon;
-        ipCity = json.data.city || "";
-        ipRegion = json.data.region || "";
+      const data = await res.json();
+      if (data?.success !== false && data?.latitude && data?.longitude) {
+        lat = Number(data.latitude);
+        lon = Number(data.longitude);
+        ipCity = data.city || "";
+        ipRegion = data.region || "";
       }
     }
   } catch {
+    // 2. Fallback to server route (extracts x-forwarded-for / client headers)
     try {
-      const res2 = await fetch("https://ipwho.is/", { signal: AbortSignal.timeout(3000) });
+      const res2 = await fetch("/api/location/ip", { signal: AbortSignal.timeout(4000) });
       if (res2.ok) {
-        const data2 = await res2.json();
-        if (data2?.success !== false && data2?.latitude && data2?.longitude) {
-          lat = Number(data2.latitude);
-          lon = Number(data2.longitude);
-          ipCity = data2.city || "";
-          ipRegion = data2.region || "";
+        const json2 = await res2.json();
+        if (json2?.success && json2?.data) {
+          lat = Number(json2.data.latitude) || lat;
+          lon = Number(json2.data.longitude) || lon;
+          ipCity = json2.data.city || "";
+          ipRegion = json2.data.region || "";
         }
       }
     } catch {}
@@ -477,7 +479,7 @@ export async function detectRealTimeLocation(force: boolean = false): Promise<IL
         (err) => reject(err),
         {
           enableHighAccuracy: highAccuracy,
-          timeout: highAccuracy ? 5000 : 7000,
+          timeout: highAccuracy ? 12000 : 8000,
           maximumAge: force ? 0 : 30000,
         }
       );

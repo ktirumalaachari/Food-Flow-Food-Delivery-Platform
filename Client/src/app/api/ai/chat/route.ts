@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/mongodb";
+import { getApiBaseUrl } from "@/lib/api/config";
 
 interface LiveFoodItem {
   id: string;
@@ -242,16 +243,7 @@ export async function POST(req: NextRequest) {
       "near you";
 
     // 1. Try Express Backend Server First (Fast 8s timeout)
-    const serverApiBase = (
-      process.env.NEXT_PUBLIC_SERVER_API_URL ||
-      process.env.NEXT_PUBLIC_SERVER_BASE_URL ||
-      process.env.NEXT_PUBLIC_SERVER_URL ||
-      "http://localhost:5000/api"
-    ).replace(/\/$/, "");
-
-    const targetUrl = serverApiBase.endsWith("/api")
-      ? `${serverApiBase}/ai/chat`
-      : `${serverApiBase}/api/ai/chat`;
+    const targetUrl = `${getApiBaseUrl()}/ai/chat`;
 
     try {
       const serverRes = await fetch(targetUrl, {

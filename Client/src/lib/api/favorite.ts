@@ -1,13 +1,6 @@
 import { TFavoriteApiResponse, TFavoriteItem } from "@/types/favorite";
 import { getAuthHeaders } from "@/lib/jwt";
-
-const SERVER_BASE_URL = (
-  process.env.NEXT_PUBLIC_SERVER_API_URL ||
-  process.env.NEXT_PUBLIC_SERVER_URL ||
-  "http://localhost:5000"
-).replace(/\/api\/?$/, "").replace(/\/$/, "");
-
-const API_BASE_URL = `${SERVER_BASE_URL}/api`;
+import { getApiBaseUrl } from "@/lib/api/config";
 
 function buildIdentityHeaders(userId?: string, userEmail?: string): Record<string, string> {
   return getAuthHeaders(userId, userEmail);
@@ -26,7 +19,7 @@ export async function toggleFavoriteApi(
       return { success: false, message: "User ID and Food ID are required." };
     }
 
-    const res = await fetch(`${API_BASE_URL}/favorites/toggle`, {
+    const res = await fetch(`${getApiBaseUrl()}/favorites/toggle`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -62,7 +55,7 @@ export async function checkIsFavoriteApi(
       return { success: false, isFavorite: false };
     }
 
-    const res = await fetch(`${API_BASE_URL}/favorites/check/${userId}/${foodId}`, {
+    const res = await fetch(`${getApiBaseUrl()}/favorites/check/${userId}/${foodId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -98,7 +91,7 @@ export async function getUserFavoritesApi(
     }
 
     const queryParams = userEmail ? `?email=${encodeURIComponent(userEmail)}` : "";
-    const res = await fetch(`${API_BASE_URL}/favorites/user/${userId}${queryParams}`, {
+    const res = await fetch(`${getApiBaseUrl()}/favorites/user/${userId}${queryParams}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -142,7 +135,7 @@ export async function removeFavoriteApi(
       return { success: false, message: "User ID and Food ID are required." };
     }
 
-    const res = await fetch(`${API_BASE_URL}/favorites/${userId}/${foodId}`, {
+    const res = await fetch(`${getApiBaseUrl()}/favorites/${userId}/${foodId}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

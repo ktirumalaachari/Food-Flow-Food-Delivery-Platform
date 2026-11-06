@@ -190,7 +190,7 @@ export default function LocationModal({ isOpen, onClose }: LocationModalProps) {
         if (!navigator.geolocation) return reject(new Error("Geolocation not supported"));
         navigator.geolocation.getCurrentPosition(resolve, reject, {
           enableHighAccuracy: highAccuracy,
-          timeout: highAccuracy ? 5000 : 7000,
+          timeout: highAccuracy ? 12000 : 8000,
           maximumAge: 0,
         });
       });
@@ -209,6 +209,22 @@ export default function LocationModal({ isOpen, onClose }: LocationModalProps) {
       setLongitude(exactLng);
       await reverseGeocode(exactLat, exactLng);
     } catch {
+      try {
+        // Direct browser IP lookup first
+        const directIp = await fetch("https://ipwho.is/", { signal: AbortSignal.timeout(3000) });
+        if (directIp.ok) {
+          const dData = await directIp.json();
+          if (dData?.success !== false && dData?.latitude && dData?.longitude) {
+            const exactLat = Number(dData.latitude);
+            const exactLng = Number(dData.longitude);
+            setLatitude(exactLat);
+            setLongitude(exactLng);
+            await reverseGeocode(exactLat, exactLng);
+            return;
+          }
+        }
+      } catch {}
+
       try {
         const ipRes = await fetch("/api/location/ip");
         if (ipRes.ok) {

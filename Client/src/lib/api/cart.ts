@@ -1,13 +1,5 @@
 import { TCart, TCartItem, TCartApiResponse } from "@/types/cart";
-
-const SERVER_BASE_URL = (
-  process.env.NEXT_PUBLIC_SERVER_API_URL ||
-  process.env.NEXT_PUBLIC_SERVER_URL ||
-  "http://localhost:5000"
-).replace(/\/api\/?$/, "").replace(/\/$/, "");
-
-const API_BASE_URL = `${SERVER_BASE_URL}/api`;
-
+import { getApiBaseUrl } from "@/lib/api/config";
 import { getAuthHeaders } from "@/lib/jwt";
 
 export function buildIdentityHeaders(
@@ -29,7 +21,7 @@ export async function getUserCart(
       return { success: false, message: "User ID is required." };
     }
 
-    const res = await fetch(`${API_BASE_URL}/cart/${userId}`, {
+    const res = await fetch(`${getApiBaseUrl()}/cart/${userId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

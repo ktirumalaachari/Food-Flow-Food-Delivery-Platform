@@ -44,6 +44,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import AiMarkdownRenderer from "./AiMarkdownRenderer";
 import { useSession } from "@/lib/auth-client";
+import { getApiBaseUrl } from "@/lib/api/config";
 import { useCart } from "@/contexts/CartContext";
 import { IGlobalFoodItem } from "@/types/restaurant";
 import { toast } from "react-toastify";
@@ -116,14 +117,6 @@ type NormalizedRole = "customer" | "restaurant" | "rider" | "guest";
 /* ------------------------------------------------------------------ */
 /*  Constants & Quick Prompts                                          */
 /* ------------------------------------------------------------------ */
-
-const SERVER_BASE_URL = (
-  process.env.NEXT_PUBLIC_SERVER_API_URL ||
-  process.env.NEXT_PUBLIC_SERVER_URL ||
-  "http://localhost:5000"
-).replace(/\/api\/?$/, "").replace(/\/$/, "");
-
-const API_BASE_URL = `${SERVER_BASE_URL}/api`;
 
 const ROLE_QUICK_ACTIONS: Record<NormalizedRole, QuickAction[]> = {
   customer: [
@@ -1203,7 +1196,7 @@ export default function AIChatbot() {
 
         if (!res.ok) {
           // Fallback to Express backend server route
-          res = await fetch(`${API_BASE_URL}/ai/chat`, {
+          res = await fetch(`${getApiBaseUrl()}/ai/chat`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

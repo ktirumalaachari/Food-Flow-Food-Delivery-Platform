@@ -54,13 +54,7 @@ export interface ApiResponse<T> {
   };
 }
 
-const SERVER_BASE_URL = (
-  process.env.NEXT_PUBLIC_SERVER_API_URL ||
-  process.env.NEXT_PUBLIC_SERVER_URL ||
-  "http://localhost:5000"
-).replace(/\/api\/?$/, "").replace(/\/$/, "");
-
-const API_BASE_URL = `${SERVER_BASE_URL}/api`;
+import { getApiBaseUrl } from "@/lib/api/config";
 
 /**
  * 1. Fetch all contact messages with search, filter, pagination
@@ -69,7 +63,7 @@ export async function getContactMessages(
   params: IContactFilterParams = {}
 ): Promise<ApiResponse<IContactMessage[]>> {
   try {
-    const url = new URL(`${API_BASE_URL}/contacts`);
+    const url = new URL(`${getApiBaseUrl()}/contacts`);
     if (params.status && params.status !== "all") url.searchParams.append("status", params.status);
     if (params.category && params.category !== "all") url.searchParams.append("category", params.category);
     if (params.search && params.search.trim()) url.searchParams.append("search", params.search.trim());
@@ -112,7 +106,7 @@ export async function getContactMessageById(
   id: string
 ): Promise<ApiResponse<IContactMessage>> {
   try {
-    const res = await fetch(`${API_BASE_URL}/contacts/${encodeURIComponent(id)}`, {
+    const res = await fetch(`${getApiBaseUrl()}/contacts/${encodeURIComponent(id)}`, {
       method: "GET",
       cache: "no-store",
       headers: { "Content-Type": "application/json" },
@@ -141,7 +135,7 @@ export async function getContactMessageById(
  */
 export async function getContactStats(): Promise<ApiResponse<IContactStats>> {
   try {
-    const res = await fetch(`${API_BASE_URL}/contacts/stats`, {
+    const res = await fetch(`${getApiBaseUrl()}/contacts/stats`, {
       method: "GET",
       cache: "no-store",
       headers: { "Content-Type": "application/json" },

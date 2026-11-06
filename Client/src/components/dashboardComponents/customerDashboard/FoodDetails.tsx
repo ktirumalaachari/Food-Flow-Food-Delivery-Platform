@@ -54,6 +54,7 @@ import { getFoodReviewsApi, IReviewSummary } from "@/lib/api/review";
 import { toggleFavoriteApi, checkIsFavoriteApi } from "@/lib/api/favorite";
 import { toast } from "react-toastify";
 import { resolveFoodImage, handleFoodImageError, getCategoryFallbackImage } from "@/lib/foodImageHelper";
+import { getApiBaseUrl } from "@/lib/api/config";
 
 interface FoodDetailsProps {
   foodId?: string;
@@ -190,13 +191,6 @@ export default function FoodDetails({ foodId }: FoodDetailsProps) {
   // Fetch food item and restaurant info
   useEffect(() => {
     let isMounted = true;
-    const SERVER_BASE_URL = (
-      process.env.NEXT_PUBLIC_SERVER_API_URL ||
-      process.env.NEXT_PUBLIC_SERVER_URL ||
-      "http://localhost:5000"
-    ).replace(/\/api\/?$/, "").replace(/\/$/, "");
-
-    const API_BASE_URL = `${SERVER_BASE_URL}/api`;
 
     async function loadDetails() {
       if (!targetId) {
@@ -207,7 +201,7 @@ export default function FoodDetails({ foodId }: FoodDetailsProps) {
       try {
         setLoading(true);
         // 1. Try single food details endpoint with restaurant populated
-        const res = await fetch(`${API_BASE_URL}/restaurants/food/item/${targetId}`);
+        const res = await fetch(`${getApiBaseUrl()}/restaurants/food/item/${targetId}`);
         if (res.ok) {
           const json = await res.json();
           if (json.success && json.data) {
@@ -222,7 +216,7 @@ export default function FoodDetails({ foodId }: FoodDetailsProps) {
           }
         } else {
           // 2. If targetId is restaurant ID, check restaurant endpoint
-          const restRes = await fetch(`${API_BASE_URL}/restaurants/${targetId}`);
+          const restRes = await fetch(`${getApiBaseUrl()}/restaurants/${targetId}`);
           if (restRes.ok) {
             const restJson = await restRes.json();
             if (restJson.success && restJson.data && isMounted) {
@@ -254,7 +248,7 @@ export default function FoodDetails({ foodId }: FoodDetailsProps) {
 
     async function fetchRestaurant(restId: string) {
       try {
-        const res = await fetch(`${API_BASE_URL}/restaurants/${restId}`);
+        const res = await fetch(`${getApiBaseUrl()}/restaurants/${restId}`);
         if (res.ok) {
           const json = await res.json();
           if (json.success && json.data && isMounted) {

@@ -2,11 +2,12 @@ import { Server as HttpServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
 import config from '../config';
 import { registerOrderTrackingHandlers } from './orderTracking.socket';
+import { getIO as getSharedIO } from '../socket';
 
 let io: SocketIOServer | null = null;
 
 /** Access the shared Socket.io server instance (null before initialization). */
-export const getIO = (): SocketIOServer | null => io;
+export const getIO = (): SocketIOServer | null => io || getSharedIO();
 
 /** Socket.io CORS origin option (string or resolver callback). */
 type CorsOrigin =
